@@ -1,13 +1,15 @@
 import pandas as pd
 import plotly.express as px
 from dash import Dash, dcc, html, Input, Output
-from utils import resource_path  # Assurez-vous que utils.py est dans le même répertoire
-# ===== 1. Charger les données (à adapter à ton fichier réel) =====
-# df = pd.read_csv("your_file.csv")
-# Exemple fictif :
+from pathlib import Path
 
 
-df = pd.read_csv(resource_path(r".data/input_B2B_purchase_V2.csv"), delimiter=",")  # Assurez-vous que df_2 est chargé si nécessaire
+# ── 1) Charger les données en chemin relatif propre ────────────────────────────
+BASE_DIR = Path(__file__).resolve().parent
+DATA_FILE = BASE_DIR / ".data" / "input_B2B_purchase_V2.csv"
+df = pd.read_csv(DATA_FILE, delimiter=",")
+
+#df = pd.read_csv(resource_path(r".data/input_B2B_purchase_V2.csv"), delimiter=",")  # Assurez-vous que df_2 est chargé si nécessaire
 df["date_purchase_month"] = pd.to_datetime(df["date_purchase_month"], format="%Y-%m-%d")
 df["hfb_no"] = df["hfb_no"].astype(str)  # Assurez-vous que hfb_no est de type str
 
@@ -18,6 +20,7 @@ df["hfb_no"] = df["hfb_no"].astype(str)  # Assurez-vous que hfb_no est de type s
 
 # --- 2. Initialiser l'app ---
 app = Dash(__name__)
+server = app.server  # <= indispensable pour Gunicorn
 app.title = "Évolution achats par secteur et HFB"
 
 # --- 3. Layout ---
